@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<title>PAPER</title>
+	{% include "support/cssjs.html" %}
+	<script
+		src="{{url_for('static', filename='global_assets/js/plugins/visualization/echarts/echarts.min.js')}}"></script>
+</head>
+<style>
+	.navbaru:hover {
+		cursor: pointer;
+		box-shadow: 0 .235rem .75rem rgba(0, 0, 0, .075) !important;
+	}
+</style>
+
+<body class="navbar-md-md-top">
+	{% include "support/navbar.html" %}
+	<!-- Page content -->
+	<div class="page-content pt-0">
+		{% include "support/sidebar.html" %}
+		<!-- Main content -->
+		<div class="content-wrapper">
+
+			<!-- Content area -->
+			<div class="content">
+
+				<!-- Basic card -->
+				<div class="card">
+					<div class="card-header header-elements-inline">
+						<h5 class="card-title">Selamat Datang <b>{{session["nama"]}}</b></h5>
+						<div class="header-elements">
+							<div class="list-icons">
+								<a class="list-icons-item" data-action="collapse"></a>
+								<a class="list-icons-item" data-action="reload"></a>
+								<a class="list-icons-item" data-action="remove"></a>
+							</div>
+						</div>
+					</div>
+
+					<div class="card-body">
+						<div class="row">
+							<div class="col-sm-6 col-md-4">
+								<div class="card card-body bg-warning-400 has-bg-image">
+									<div class="media">
+										<div class="media-body">
+											<h3 class="mb-0" id="inv"></h3>
+											<span class="text-uppercase font-size-xs">Total Invoice</span>
+										</div>
+
+										<div class="ml-3 align-self-center">
+											<i class="icon-file-text3 icon-3x opacity-75"></i>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="col-sm-6 col-md-4">
+								<div class="card card-body bg-success-400 has-bg-image">
+									<div class="media">
+										<div class="media-body">
+											<h3 class="mb-0" id="lunas"></h3>
+											<span class="text-uppercase font-size-xs">Lunas</span>
+										</div>
+
+										<div class="ml-3 align-self-center">
+											<i class="icon-file-check2 icon-3x opacity-75"></i>
+										</div>
+									</div>
+								</div>
+							</div>
+							<!-- <div class="col-sm-6 col-md-3">
+								<div class="card card-body bg-blue-400 has-bg-image">
+									<div class="media">
+										<div class="media-body">
+											<h3 class="mb-0">54,390</h3>
+											<span class="text-uppercase font-size-xs">Sudah Transfer</span>
+										</div>
+
+										<div class="ml-3 align-self-center">
+											<i class="icon-hour-glass2 icon-3x opacity-75"></i>
+										</div>
+									</div>
+								</div>
+							</div> -->
+							<div class="col-sm-6 col-md-4">
+								<div class="card card-body bg-danger-400 has-bg-image">
+									<div class="media">
+										<div class="media-body">
+											<h3 class="mb-0" id="duedate"></h3>
+											<span class="text-uppercase font-size-xs">Jatuh Tempo</span>
+										</div>
+
+										<div class="ml-3 align-self-center">
+											<i class="icon-hour-glass2 icon-3x opacity-75"></i>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<h3>Tahun {{getTahun}}</h3>
+						<div class="row">
+							<div class="col-md-12">
+								<div class="chart-container">
+									<div class="chart has-fixed-height" id="columns_basic"></div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- /basic card -->
+
+			</div>
+			<!-- /content area -->
+
+		</div>
+		<!-- /main content -->
+	</div>
+	<script>
+
+		$.get("getInvoiceChart").done((data) => {
+			let dtLunas = data['totalLunas']
+			let dtNoLunas = data['totalNoLunas']
+			let dtBiaya = data['totalBiaya']
+
+			$("#inv").text(data['invall'])
+			$("#lunas").text(data['invlunas'])
+			$("#duedate").text(data['invjatuh'])
+			//
+			// Chart config
+			//
+			var chrt = document.getElementById('columns_basic')
+			var columns_basic = echarts.init(chrt);
+
+			// Options
+			columns_basic.setOption({
+
+				// Define colors
+				color: ['#4fc0e8', '#fdcd56', '#d87a80', '#ffb980', '#d87a80'],
+
+				// Global text styles
+				textStyle: {
+					fontFamily: 'Roboto, Arial, Verdana, sans-serif',
+					fontSize: 13
+				},
+
+				// Chart animation duration
+				animationDuration: 750,
+
+				// Setup grid
+				grid: {
+					left: 0,
+					right: 40,
+					top: 35,
+					bottom: 0,
+					containLabel: true
+				},
+
+				// Add legend
+				legend: {
+					data: ['Lunas', 'Piutang', 'Biaya'],
+					itemHeight: 8,
+					itemGap: 20,
+					textStyle: {
+						padding: [0, 5]
+					}
+				},
+
+				// Add tooltip
+				tooltip: {
+					trigger: 'axis',
+					backgroundColor: 'rgba(0,0,0,0.75)',
+					padding: [10, 15],
+					textStyle: {
+						fontSize: 13,
+						fontFamily: 'Roboto, sans-serif'
+					}
+				},
+
+				// Horizontal axis
+				xAxis: [{
+					type: 'category',
+					data: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+					axisLabel: {
+						color: '#333'
+					},
+					axisLine: {
+						lineStyle: {
+							color: '#999'
+						}
+					},
+					splitLine: {
+						show: true,
+						lineStyle: {
+							color: '#eee',
+							type: 'dashed'
+						}
+					}
+				}],
+
+				// Vertical axis
+				yAxis: [{
+					type: 'value',
+					axisLabel: {
+						color: '#333'
+					},
+					axisLine: {
+						lineStyle: {
+							color: '#999'
+						}
+					},
+					splitLine: {
+						lineStyle: {
+							color: ['#eee']
+						}
+					},
+					splitArea: {
+						show: true,
+						areaStyle: {
+							color: ['rgba(250,250,250,0.1)', 'rgba(0,0,0,0.01)']
+						}
+					}
+				}],
+
+				// Add series
+				series: [
+					{
+						name: 'Lunas',
+						type: 'bar',
+						//data: [2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3],
+						data: dtLunas,
+						itemStyle: {
+							normal: {
+								label: {
+									show: true,
+									position: 'top',
+									textStyle: {
+										fontWeight: 500
+									}
+								}
+							}
+						},
+					},
+					{
+						name: 'Piutang',
+						type: 'bar',
+						//data: [2.6, 5.9, 9.0, 26.4, 58.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3],
+						data: dtNoLunas,
+						itemStyle: {
+							normal: {
+								label: {
+									show: true,
+									position: 'top',
+									textStyle: {
+										fontWeight: 500
+									}
+								}
+							}
+						},
+					},
+					{
+						name: 'Biaya',
+						type: 'bar',
+						//data: [2.6, 5.9, 9.0, 26.4, 58.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3],
+						data: dtBiaya,
+						itemStyle: {
+							normal: {
+								label: {
+									show: true,
+									position: 'top',
+									textStyle: {
+										fontWeight: 500
+									}
+								}
+							}
+						},
+					},
+				]
+			});
+		}).fail((xhr, msg, txt) => {
+			console.log(xhr, msg, txt)
+		})
+	</script>
+</body>
+
+</html>

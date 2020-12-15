@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>PAPER</title>
+    {% include "support/cssjs.html" %}
+</head>
+<style>
+</style>
+
+<body class="navbar-md-md-top">
+    {% include "support/navbar.html" %}
+    <!-- Page content -->
+    <div class="page-content pt-0">
+        {% include "support/sidebar.html" %}
+        <!-- Main content -->
+        <div class="content-wrapper" id="appcontent">
+
+            <!-- Content area -->
+            <div class="content">
+
+                <!-- Basic card -->
+                <div class="card">
+                    <div class="card-header header-elements-inline">
+                        <h5 class="card-title">Invoice NYA</b></h5>
+                        <div class="header-elements">
+                            <div class="list-icons">
+                                <a class="list-icons-item" data-action="collapse"></a>
+                                <a class="list-icons-item" data-action="reload"></a>
+                                <a class="list-icons-item" data-action="remove"></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="row mb-2">
+                            <div class="col-md-2">
+                                <a href="invoice?m=create" class="btn bg-pink rounded-round"><i
+                                        class="icon-add mr-2"></i>
+                                    Invoice</a>
+                            </div>
+                            <div class="col-md-6">
+                                <button class="btn btn-info"><i class="icon-info3"></i>
+                                    &nbsp;<span id="totalRow"></span></button>
+                                <!-- <span class="badge badge-info badge-icon"><i class="icon-info3"></i> &nbsp;<span
+                                        id="totalRow"></span></span> -->
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="">Bulan</label>
+                                    <select name="" id="" v-model="fil.bln" class="form-control form-control-sm">
+                                        <option v-for="v in isibln" v-bind:value="((v.valnya))">((v.nm))</option>
+                                    </select>
+                                    <!-- <small id="helpId" class="form-text text-muted">Bulan</small> -->
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="">Tahun</label>
+                                    <select name="" id="" v-model="fil.thn" class="form-control form-control-sm">
+                                        <option v-for="v in isithn" v-bind:value="((v.valnya))">((v.nm))</option>
+                                    </select>
+                                    <!-- <small id="helpId" class="form-text text-muted">Bulan</small> -->
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="" style=" display: block;visibility: hidden;">Tahun</label>
+                                <button @click="getListInv" class="btn btn-primary"><i
+                                        class="icon-search4"></i></button>
+                            </div>
+                            <div class="col-md-2">
+                                <label for="" style=" display: block;visibility: hidden;">Tahun</label>
+                                <!-- <span class="badge badge-info" id="totalRow"></span> -->
+
+                            </div>
+                            <div class="col-md-3">
+                                <label for="" style=" display: block;visibility: hidden;">Tahun</label>
+                                <select name="" id="" class="form-control" @change="filterGroupBy">
+                                    <option value="5">All</option>
+                                    <option value="0"><span class="badge badge-mark border-success mr-2"></span>Lunas
+                                    </option>
+                                    <option value="1"><span class="badge badge-mark border-warning mr-2"></span>Unpaid
+                                    </option>
+                                    <option value="2"><span class="badge badge-mark border-danger mr-2"></span>Jatuh
+                                        Tempo</option>
+                                    <option value="3"><span class="badge badge-mark border-primary mr-2"></span>Hasil
+                                        Generate</option>
+                                    <option value="9"><span class="badge badge-mark border-info mr-2"></span>Sudah
+                                        Transfer</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <!-- <div class="table-responsive" style="min-height: 500px;"> -->
+                                <table id="tblnya" class="table table-striped">
+                                    <thead class="bg-blue-600" style="white-space: nowrap;">
+                                        <!-- <th>No.</th> -->
+                                        <th>Action</th>
+                                        <th>INVOICE</th>
+                                        <th>Status</th>
+                                        <th>Nama Client</th>
+                                        <!-- <th>Produk</th> -->
+                                        <th>Total</th>
+                                        <th>Tanggal</th>
+                                        <th>Jatuh Tempo</th>
+                                        <th>Repeat</th>
+                                        <th>Reminder</th>
+                                        <!-- <th>Total Harga</th> -->
+
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="(v,k) in isitbl" class="text-nowrap">
+                                            <!-- <td>((k+1))</td> -->
+                                            <td>
+                                                <div class="list-icons" style="z-index: 9999999999999;">
+                                                    <div class="dropdown">
+                                                        <a href="#" class="list-icons-item dropdown-toggle"
+                                                            data-toggle="dropdown" aria-expanded="false"><i
+                                                                class="icon-cog6"></i></a>
+
+                                                        <div class="dropdown-menu">
+                                                            <div class="dropdown-header">Options</div>
+                                                            <button
+                                                                @click="editInv(((v.noinv)),((v.bulan)),((v.tahun)))"
+                                                                class="dropdown-item"><i class="icon-pencil7"></i>Edit
+                                                                entry</button>
+                                                            <button @click="delInv(((v.noinv)),((v.bulan)),((v.tahun)))"
+                                                                class="dropdown-item"><i class="icon-bin"></i>Remove
+                                                                entry</button>
+                                                            <div class="dropdown-header">Action</div>
+                                                            <button
+                                                                @click="showInv(((v.noinv)),((v.bulan)),((v.tahun)),'showinv')"
+                                                                class="dropdown-item"><i class="icon-eye8">
+                                                                    Preview</i> </button>
+                                                            <button
+                                                                @click="showInv(((v.noinv)),((v.bulan)),((v.tahun)),'showemail')"
+                                                                class="dropdown-item"><i class="icon-envelop3"></i>
+                                                                Email</button>
+                                                            <div class="dropdown-header">Change Status</div>
+                                                            <button
+                                                                @click="changeSts(0,((v.uuid)),((v.bulan)),((v.tahun)))"
+                                                                class="dropdown-item"><span
+                                                                    class="badge badge-mark border-success mr-2"></span>
+                                                                Lunas
+                                                            </button>
+                                                            <button
+                                                                @click="changeSts(9,((v.uuid)),((v.bulan)),((v.tahun)))"
+                                                                class="dropdown-item"><span
+                                                                    class="badge badge-mark border-primary mr-2"></span>
+                                                                Sudah Transfer
+                                                            </button>
+                                                            <button
+                                                                @click="changeSts(2,((v.uuid)),((v.bulan)),((v.tahun)))"
+                                                                class="dropdown-item"><span
+                                                                    class="badge badge-mark border-danger mr-2"></span>
+                                                                Jatuh Tempo
+                                                            </button>
+                                                            <button
+                                                                @click="changeSts(1,((v.uuid)),((v.bulan)),((v.tahun)))"
+                                                                class="dropdown-item"><span
+                                                                    class="badge badge-mark border-warning mr-2"></span>
+                                                                Unpaid
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>((v.noinv2))</td>
+                                            <td>
+                                                <span class="badge badge-primary" v-if="((v.stsinv)) == '3'"
+                                                    value="3">Hasil Generate</span>
+                                                <span class="badge badge-danger" v-if="((v.stsinv)) == '2'"
+                                                    value="2">Jatuh
+                                                    Tempo</span>
+                                                <span class="badge badge-warning" v-if="((v.stsinv)) == '1'"
+                                                    value="1">Unpaid</span>
+                                                <span class="badge badge-success" v-if="((v.stsinv)) == '0'"
+                                                    value="0">Lunas</span>
+                                                <span class="badge badge-info" v-if="((v.stsinv)) == '9'"
+                                                    value="9">Sudah
+                                                    Transfer</span>
+                                            </td>
+                                            <td>((v.nmclient))</td>
+                                            <!-- <td>((v.nmprdk))</td> -->
+                                            <td>(( formatRupiah(v.totalharga) ))</td>
+                                            <td>((v.tglcreate))</td>
+                                            <td>((v.tgljatuhtempo))</td>
+                                            <td>((v.nextday)) Hari</td>
+                                            <td>((v.tglreminder))</td>
+                                            <!-- <td>((v.totalharga))</td> -->
+
+                                            <!-- <td>
+                                                <div class="list-icons">
+                                                    <a @click="openModal(((v.idkategori)))" href="#"
+                                                        class="list-icons-item" data-popup="tooltip" title="Edit"
+                                                        data-container="body">
+                                                        <i class="icon-pencil7"></i>
+                                                    </a>
+                                                    <a @click="processDel(((v.idkategori)))" href="#"
+                                                        class="list-icons-item" data-popup="tooltip" title="Remove"
+                                                        data-container="body">
+                                                        <i class="icon-trash"></i>
+                                                    </a>
+                                                </div>
+                                            </td> -->
+                                        </tr>
+                                    </tbody>
+                                    <tfoot>
+                                        <td colspan="4"></td>
+                                        <td id="totalBawah"></td>
+                                    </tfoot>
+                                </table>
+
+                                <!-- </div> -->
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /basic card -->
+
+                </div>
+                <!-- /content area -->
+
+            </div>
+            <!-- /main content -->
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <script>
+            let swalInit = swal.mixin({
+                buttonsStyling: false,
+                confirmButtonClass: 'btn btn-primary',
+                cancelButtonClass: 'btn btn-light'
+            });
+            $.extend($.fn.dataTable.defaults, {
+                autoWidth: false,
+                dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                language: {
+                    search: '<span>Filter:</span> _INPUT_',
+                    searchPlaceholder: 'Type to filter...',
+                    lengthMenu: '<span>Show:</span> _MENU_',
+                    paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                }
+            });
+            let appcontent = new Vue({
+                el: '#appcontent',
+                delimiters: ['((', '))'],
+                data: {
+                    ketAct: 'Add Kategori',
+                    add: true,
+                    edit: false,
+                    isitbl: [],
+                    isitmptbl: [],
+                    isicbgl: [],
+                    isibln: [],
+                    isithn: [],
+                    ststbl: false,
+                    frm1: {
+                        "tmpcode": '',
+                        "code": '',
+                        "name": '',
+                        "desc": '',
+                    },
+                    fil: {
+                        'thn': '',
+                        'bln': '',
+                    }
+                },
+                mounted() {
+                    console.log('Run Awal')
+                    arrbln = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+                    for (let i = 0; i < arrbln.length; i++) {
+                        this.isibln.push({ 'nm': arrbln[i], 'valnya': i + 1 })
+                    }
+                    let now = new Date().getFullYear()
+                    let lastnow = now - 2
+                    let latestnow = now + 2
+                    for (let i = lastnow; i <= latestnow; i++) {
+                        this.isithn.push({ 'nm': i, 'valnya': i })
+                    }
+                    this.fil.bln = new Date().getMonth() + 1
+                    this.fil.thn = new Date().getFullYear()
+                    this.getListInv()
+                },
+                methods: {
+                    filterGroupBy() {
+                        if ($.fn.DataTable.isDataTable('#tblnya')) $("#tblnya").DataTable().destroy();
+                        let valnya = event.target.value
+                        let tmp = []
+                        this.isitmptbl.map((v, k) => {
+                            if (v.stsinv == valnya) tmp.push(v)
+                        })
+                        if (valnya == '5') this.isitbl = this.isitmptbl
+                        else this.isitbl = tmp
+                        //console.log(tmp, valnya);
+                        this.$nextTick(function () {
+                            $("#tblnya").DataTable({
+                                scrollY: '77vh',
+                                "scrollX": true,
+                                "order": [[0, "desc"]]
+                            }).columns.adjust()
+                            let total = $('#tblnya').DataTable().column(4).data();
+                            let ttl = 0
+                            for (let i = 0; i < total.length; i++) ttl += parseInt(total[i].replace(".", "").replace("Rp", "").replace(" ", ""))
+                            $("#totalRow").html(`Total: ${this.formatRupiah(ttl)}`)
+                            $("#totalBawah").html(`Total: ${this.formatRupiah(ttl)}`)
+                        })
+                    },
+                    formatRupiah(angka, prefix) {
+                        var number_string = angka.toString().replace(/[^,\d]/g, "").toString(),
+                            split = number_string.split(","),
+                            sisa = split[0].length % 3,
+                            rupiah = split[0].substr(0, sisa),
+                            ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+                        if (ribuan) {
+                            separator = sisa ? "." : "";
+                            rupiah += separator + ribuan.join(".");
+                        }
+
+                        rupiah = split[1] != undefined ? rupiah + "," + split[1] : rupiah;
+                        return prefix == undefined ? rupiah : rupiah ? "Rp. " + rupiah : "";
+                    },
+                    getListInv() {
+                        if ($.fn.DataTable.isDataTable('#tblnya')) $("#tblnya").DataTable().destroy();
+                        this.isitbl = []
+                        this.ststbl = false
+                        $.get("getlistinv2", { "bulan": this.fil.bln, "tahun": this.fil.thn }).done(data => {
+                            this.isitbl = []
+                            this.isitbl = JSON.parse(data)
+                            this.isitmptbl = JSON.parse(data)
+                            //console.log(this.isitbl)
+                            //console.log(this.ststbl)
+                            if (this.isitbl.length == 0) this.ststbl = true
+                            this.$nextTick(function () {
+                                $("#tblnya").DataTable({
+                                    scrollY: '77vh',
+                                    "scrollX": true,
+                                    "order": [[0, "desc"]]
+                                }).columns.adjust()
+                                let total = $('#tblnya').DataTable().column(4).data();
+                                let ttl = 0
+                                for (let i = 0; i < total.length; i++) ttl += parseInt(total[i].replace(".", "").replace("Rp", "").replace(" ", ""))
+                                $("#totalRow").html(`Total: ${this.formatRupiah(ttl)}`)
+                                $("#totalBawah").html(`Total: ${this.formatRupiah(ttl)}`)
+                            })
+                        }).fail((xhr, msg, txt) => {
+                            this.msgFrm("Upss..!", "Silahkan Ulangi!!", "error")
+                            console.log(xhr, msg, txt)
+                        })
+                    },
+                    changeSts(stsnya, uuidnya, bln, thn) {
+                        $.post("changestsinv", { "sts": stsnya, "uuid": uuidnya, "bulan": bln, "tahun": thn }).done((data) => {
+                            this.msgFrm("Success", "Berhasil.!", "success")
+                            this.isitbl = JSON.parse(data)
+                        }).fail((xhr, msg, txt) => {
+                            this.msgFrm("Upss..!", "Something Wrong!!", "error")
+                            console.log(xhr, msg, txt)
+                        })
+                    },
+                    getNow() {
+                        return "aa"
+                    },
+                    showInv(no, bln, thn, apa) {
+                        let jsn = {
+                            "noinv": no,
+                            "bulan": bln,
+                            "tahun": thn,
+                            "edit": true,
+                        }
+                        $.post("setparaminv", jsn).done((data) => {
+                            //console.log(data)
+                            if (apa == 'showinv') window.open("?m=showinv", '_blank')
+                            else if (apa == 'showemail') window.open("?m=showinvemail", '_blank')
+                        }).fail((xhr, msg, txt) => {
+                            console.log(xhr, msg, txt)
+                        })
+                        //window.location.href = `invoice?m=edit&no=${no}&bulan=${bln}&tahun=${thn}`
+                    },
+                    editInv(no, bln, thn) {
+                        window.location.href = `invoice?m=edit&no=${no}&bulan=${bln}&tahun=${thn}`
+                    },
+                    delInv(no, bln, thn) {
+                        console.log(no, bln, thn)
+                        let jsn = {
+                            "noinv": no,
+                            "bulan": bln,
+                            "tahun": thn
+                        }
+                        swalInit({
+                            title: 'Are you sure Delete?',
+                            text: "You won't be able to revert this!",
+                            type: 'warning',
+                            showCancelButton: true,
+                            confirmButtonText: 'Yes, delete it!',
+                            cancelButtonText: 'No, cancel!',
+                            confirmButtonClass: 'btn btn-success',
+                            cancelButtonClass: 'btn btn-danger',
+                            buttonsStyling: false
+                        }).then(result => {
+                            if (result.value) {
+                                $.ajax({
+                                    contentType: "application/json",
+                                    url: "delinv",
+                                    data: JSON.stringify(jsn),
+                                    type: "POST",
+                                    success: (data) => {
+                                        this.msgFrm("Success", "Berhasil Delete Invoice!", "success")
+                                        this.isitbl = JSON.parse(data)
+                                        //window.location.href = "invoice?m=listinv"
+                                    },
+                                    error: (xhr, msg, txt) => {
+                                        console.log(xhr, msg, txt)
+                                    },
+
+                                })
+                            }
+                        });
+
+                    },
+                    openModal(apa = "add") {
+                        if (apa == "add") {
+                            let newkd = parseInt(this.isitbl[this.isitbl.length - 1].idkategori.slice(-2)) + 1
+                            let kd = (newkd.toString().length == 1) ? `0${newkd}` : newkd
+                            this.frm1.tmpcode = "00"
+                            this.frm1.code = `KAT${kd}`
+                            this.frm1.name = ""
+                            this.frm1.desc = ""
+                            this.ketAct = "Add Kategori";
+                            this.btnFrm(true, false)
+                        } else {
+                            let idx = this.findById(apa, "idkategori")
+                            let jsn = this.isitbl[idx]
+                            this.frm1.tmpcode = jsn.idkategori
+                            this.frm1.code = jsn.idkategori
+                            this.frm1.name = jsn.nmkategori
+                            this.frm1.desc = jsn.description
+                            this.ketAct = "Edit Kategori";
+                            this.btnFrm(false, true)
+                        }
+                        $("#modalForm").modal("show")
+                    },
+                    btnAddFrm() {
+                        let idx = this.findById(this.frm1.code, "idkategori")
+                        if (idx > -1) { this.msgFrm("Uppss.!", "Masukkan Code yang lain..!", "error"); return; }
+                        //return
+                        if (!this.validasi()) { this.msgFrm("Uppss.!", "Fill All Data Data..!", "error"); return; }
+                        $.post("addPkategori", this.frm1).done(data => {
+                            $("#modalForm").modal("hide")
+                            this.msgFrm("Success.!", "Success Add Data..!", "success")
+                            this.isitbl = JSON.parse(data)
+                        })
+                    },
+                    btnEditFrm() {
+                        //let idx = this.findById(this.frm1.code, "idkategori")
+                        //if (idx > -1) { this.msgFrm("Uppss.!", "Masukkan Code yang lain..!", "error"); return; }
+                        //return
+                        if (!this.validasi()) { this.msgFrm("Uppss.!", "Fill All Data Data..!", "error"); return; }
+                        $.post("editPkategori", this.frm1).done(data => {
+                            $("#modalForm").modal("hide")
+                            this.msgFrm("Success.!", "Success Edit Data..!", "success")
+                            this.isitbl = JSON.parse(data)
+                        })
+                    },
+                    processDel(idnya = false) {
+                        if (idnya !== false) {
+                            swalInit({
+                                title: 'Are you sure Delete?',
+                                text: "You won't be able to revert this!",
+                                type: 'warning',
+                                showCancelButton: true,
+                                confirmButtonText: 'Yes, delete it!',
+                                cancelButtonText: 'No, cancel!',
+                                confirmButtonClass: 'btn btn-success',
+                                cancelButtonClass: 'btn btn-danger',
+                                buttonsStyling: false
+                            }).then(result => {
+                                if (result.value) {
+                                    $.post("delPkategori", { "id": idnya }).done(data => {
+                                        this.msgFrm("Success.!", "Success Delete Data..!", "success")
+                                        this.isitbl = JSON.parse(data)
+                                    })
+                                }
+                            });
+                        }
+                    },
+                    msgFrm(ttl, txt, typ) {
+                        swalInit({
+                            title: ttl,
+                            text: txt,
+                            type: typ
+                        });
+                    },
+                    btnFrm(b1 = true, b2 = false) {
+                        this.add = b1; this.edit = b2;
+                    },
+                    findById(tmpid, apa) {
+                        let idxToRemove
+                        this.isitbl.forEach(function (dt, index) {
+                            if (dt[apa] == tmpid) idxToRemove = index;
+                        });
+                        return idxToRemove
+                    },
+                    validasi() {
+                        for (var key in this.frm1) {
+                            if (this.frm1.hasOwnProperty(key)) {
+                                if (this.frm1[key] === '' || this.frm1[key] == '' || this.frm1[key] === null || this.frm1[key] == null) {
+                                    //console.log(this.frm1[key], key)
+                                    return false
+                                }
+                                return true
+                            }
+                        }
+                    },
+                }
+            })
+        </script>
+</body>
+
+</html>
